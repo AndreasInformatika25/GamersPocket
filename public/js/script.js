@@ -1,65 +1,72 @@
-// Callback - Ajax
-// $(`.search-button`).on(`click`, function () {
-//     $.ajax({
-//         url:
-//             "https://www.cheapshark.com/api/1.0/deals?storeID=1&title=" +
-//             $(`.input-keyword`).val(),
-//         success: (results) => {
-//             const games = results;
-//             let cards = "";
-//             games.forEach((game) => {
-//                 cards += showCards(game);
-//             });
-//             $(".game-container").html(cards);
-
-//             // Ketika button modal di klik
-//             $(`.modal-detail-button`).on(`click`, function () {
-//                 const gameId = $(this).data("gameid").toString();
-//                 const game = games.find((g) => g.gameID === gameId);
-//                 const detailGame = showGameDetail(game);
-//                 $(".modal-body").html(detailGame);
-//             });
-//         },
-//         error: (e) => {
-//             console.log(e.responseText);
-//         },
-//     });
-// });
-
-// Fetch
-function getGames(keyword = "") {
-    fetch(`https://www.cheapshark.com/api/1.0/deals?storeID=1&title=${keyword}`)
-        .then((response) => response.json())
-        .then((games) => {
-            let cards = "";
-            games.forEach((game) => (cards += showCards(game)));
-            const gameContainer = document.querySelector(".game-container");
-            gameContainer.innerHTML = cards;
-
-            // Pasang event listener untuk setiap tombol detail setelah card dirender
-            const modalDetailButton = document.querySelectorAll(
-                ".modal-detail-button",
-            );
-            modalDetailButton.forEach((btn) => {
-                btn.addEventListener("click", function () {
-                    const gameid = this.dataset.gameid;
-                    const game = games.find((g) => g.gameID === gameid);
-                    const detailGame = showGameDetail(game);
-                    const modalBody = document.querySelector(".modal-body");
-                    modalBody.innerHTML = detailGame;
-                });
-            });
-        })
-        .catch((err) => console.error("Gagal mengambil data:", err));
-}
-getGames();
-
+const gameContainer = document.querySelector(".game-container");
 const searchForm = document.querySelector('form[role="search"]');
 const inputKeyword = document.querySelector(".input-keyword");
 
+async function getGames(keyword = "") {
+    gameContainer.innerHTML = `
+        <div class="col-12 text-center text-white my-5">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Mengambil daftar diskon game...</p>
+        </div>
+    `;
+
+    try {
+        const url = `https://www.cheapshark.com/api/1.0/deals?storeID=1&title=${encodeURIComponent(keyword)}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const games = await response.json();
+        if (games.length === 0) {
+            gameContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-warning text-center" role="alert">
+                        Game dengan kata kunci "<strong>${keyword}</strong>" tidak ditemukan.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        let cards = "";
+        games.forEach((game) => (cards += showCards(game)));
+        gameContainer.innerHTML = cards;
+
+        // 4. Event listener tombol detail modal
+        const modalDetailButtons = document.querySelectorAll(
+            ".modal-detail-button",
+        );
+        modalDetailButtons.forEach((btn) => {
+            btn.addEventListener("click", function () {
+                const gameid = this.dataset.gameid;
+                const game = games.find((g) => g.gameID === gameid);
+                if (game) {
+                    document.querySelector(".modal-body").innerHTML =
+                        showGameDetail(game);
+                }
+            });
+        });
+    } catch (err) {
+        console.error("Gagal mengambil data:", err);
+        gameContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger text-center" role="alert">
+                    Terjadi kesalahan saat menghubungi server API. Silakan coba beberapa saat lagi.
+                </div>
+            </div>
+        `;
+    }
+}
+
+getGames();
+
 searchForm.addEventListener("submit", function (e) {
-    e.preventDefault(); // Mencegah halaman ter-reload
-    getGames(inputKeyword.value);
+    e.preventDefault();
+    getGames(inputKeyword.value.trim());
 });
 
 function showCards(game) {
