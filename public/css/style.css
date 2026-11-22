@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+/* Root */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Lato", sans-serif;
+}
+
+body {
+    background-color: #22222f;
+}
+
+.navbar {
+    padding: 12px 0px;
+}
+
+.navbar a {
+    font-weight: 600;
+    font-size: 32px;
+}
+
+.card,
+.card img {
+    border-radius: 8px 8px 0px 0px;
+    background-color: #45455e;
+}
+
+.card:hover {
+    border: 1px solid white;
+    transition: 0.3s ease-in-out;
+    border-radius: 8px;
+}
+
+.card-title {
+    font-weight: 550;
+    font-size: 18px;
+    color: #fefeff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+    min-height: calc(1.4em * 2);
+}
+
+.d-flex {
+    color: #26b171;
+    align-items: end;
+}
+
+.sale-price {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.normal-price {
+    background-color: #26b171;
+    padding: 1px 2px;
+    border-radius: 4px;
+    color: #fefeff;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 1px;
+}
+
+.modal-detail-button {
+    align-items: center;
+    width: 100%;
+    padding: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #a0a2be;
+    color: #282e45;
+}
+.modal-detail-button:hover {
+    color: #fefeff;
+    background-color: #7c7e91;
+    transition: 0.3s ease-in-out;
+}
